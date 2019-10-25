@@ -1,0 +1,24 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background: black;
+}
+canvas {
+  position: absolute;
+  top: 55px;
+  left: 55px;
+  display: block;
+  transform: scale(0.9);
+  /* filter: opacity(50%); */
+  border: 30px solid black;
+}
+
+/* comment out the image settings
+if you dont want the overlay */
+img{
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
