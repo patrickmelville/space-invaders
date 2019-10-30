@@ -1,6 +1,7 @@
 let Level1 = {
     setup: function () {
         // set stuff up
+        imageMode(CENTER);
         this.pos = createVector(width / 2, 550);
         this.lives = 4;
         this.aliens = [];
@@ -13,11 +14,14 @@ let Level1 = {
         this.setupBullet();
         this.setupBarriers();
         this.turd = false;
-        this.currentScore = 0; 
+        this.currentScore = 0;
     },
     draw: function () {
         push();
         background(0);
+
+
+
         // draw score
         textSize(22);
         fill(255);
@@ -30,6 +34,7 @@ let Level1 = {
         this.drawBullet();
 
         pop();
+
     },
     update: function () {
         this.updateShip();
@@ -39,14 +44,12 @@ let Level1 = {
         this.updateAlienBullets();
     },
     keyPressed: function (keyCode) {
-        if (keyCode == 32) {
+        if (keyCode == 32) { //SPACEBAR
             this.fireBullet();
         }
-        if (keyCode == 27) {
-            this.fireBullet();
+        if (keyCode == 27) { // ESCAPE KEY
             GM.setCurrentScene("MainMenu");
 
-            //FIXME take this out later
             GM.recentScore = this.currentScore;
             Highscores.addHighscore(GM.recentScore);
 
@@ -56,13 +59,8 @@ let Level1 = {
     drawShip: function () {
         fill(0, 255, 0);
         noStroke();
-        // if (this.turd) {
-        //     textSize(100);
-        //     text("💩", this.pos.x, this.pos.y);
-        // } else {
         rect(this.pos.x, this.pos.y, 60, 30, 15, 15, 0, 0);
         rect(this.pos.x + 25, this.pos.y - 10, 10, 20);
-        // }
     },
     drawBarriers: function () {
         for (let i = 0; i < this.barriers.length; i++) {
@@ -77,7 +75,8 @@ let Level1 = {
         fill(255);
         for (let i = 0; i < this.aliens.length; i++) {
             const a = this.aliens[i];
-            circle(a.pos.x, a.pos.y, 30);
+            // circle(a.pos.x, a.pos.y, 30);
+            image(alienImg, a.pos.x, a.pos.y, 35, 30);
         }
 
     },
@@ -114,9 +113,15 @@ let Level1 = {
             // move it
             a.pos.add(this.alienDir);
 
+            // if alien touches player... destroy player
+            let dist2Player = dist(this.pos.x + 28, this.pos.y, a.pos.x, a.pos.y);
+            if (dist2Player < 30) {
+                this.destroyShip();
+            }
+
             // random chance to fire an Alien Bullet
             let rand = random(100);
-            if (rand < 0.03) {
+            if (rand < 0.06) {
                 this.fireAlienBullet(a.pos);
             }
 
@@ -145,7 +150,7 @@ let Level1 = {
         });
 
 
-        // actually change direction out of the loop
+        // change direction out of the loop & speed up aliens
         if (this.alienJustHitLeftWall) {
             this.alienDir.rotate(-HALF_PI);
             this.alienDir.x *= 1.05;
@@ -157,6 +162,15 @@ let Level1 = {
             this.alienDir.x *= 1.05;
             this.alienJustHitRightWall = false;
             this.alienJustHitRightWall = false;
+        }
+        // cap alien speed
+        if (this.alienDir.x > 15) this.alienDir.x = 15;
+
+        // clear screen = get points & add new aliens
+        if (this.aliens.length < 1) {
+            this.setupAliens();
+            this.currentScore += 1000;
+            this.alienDir.x = (this.currentScore / 1000 / 2) - 2;
         }
 
     },
@@ -187,7 +201,16 @@ let Level1 = {
         });
     },
     updateBarriers: function () {
-        this.barriers = this.barriers.filter(barrier => {
+        let destroyedBarriers = [];
+        this.barriers = this.barriers.filter((barrier, i) => {
+            let hasDestroyedBarriers = false;
+            destroyedBarriers.forEach(db => {
+                if (db == i) {
+                    hasDestroyedBarriers = true;
+                }
+            });
+            if (hasDestroyedBarriers) return false;
+
             let didHitEnemyBullet = false;
             let didHitPlayerBullet = false;
             // check for the player bullet
@@ -200,6 +223,7 @@ let Level1 = {
                 let dist2Ebullet = dist(barrier.x, barrier.y, bullet.x, bullet.y + (25 / 2));
                 if (dist2Ebullet < 15 / 2) {
                     didHitEnemyBullet = true;
+                    destroyedBarriers.push(i+1);
                     return false;
                 } else {
                     return true;
@@ -212,7 +236,7 @@ let Level1 = {
                 this.bullet.fired = false;
                 return false;
             } //else {
-                return true;
+            return true;
             // }
         });
     },
@@ -264,8 +288,16 @@ let Level1 = {
         this.alienBullets.push(createVector(v.x, v.y));
     },
     destroyShip: function () {
+        this.pos.x = 50;
         this.lives--;
-        this.turd = "💩";
+
+        if (this.lives < 1) {
+            GM.recentScore = this.currentScore;
+            Highscores.addHighscore(GM.recentScore);
+
+            GM.setCurrentScene("Highscores");
+        }
+
     },
 
 

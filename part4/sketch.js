@@ -1,3 +1,9 @@
+let myCanvas;
+
+function preload(){
+  alienImg = loadImage("images/alien.png");
+}
+
 function setup() {
   createCanvas(800, 600);
   // global settings
@@ -29,4 +35,8 @@ function draw() {
 
 function keyPressed(){
   GM.getCurrentScene().keyPressed(keyCode);
+}
+
+function mouseClicked(){
+  Level1.fireBullet();
 }

@@ -1,8 +1,8 @@
 let Instructions = {
     setup: function () {
-        this.text1 = "To control your ship... blah blah blah.";
-        this.text2 = "press the XX button and so on. yada yada yada";
-        this.text3 = "watch out for the bombs...";
+        this.text1 = "Use LEFT/RIGHT or A/D to control your ship.";
+        this.text2 = "press the SPACEBAR to fire your weapon.";
+        this.text3 = "watch out for the aliens... They will shoot at you.";
 
     },
     draw: function () {

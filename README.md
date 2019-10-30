@@ -8,8 +8,7 @@ desc...
 - [x] add collision checks on barriers for all bullets
 - [x] connect score to GameManager
 - [x] escape button goes back to menu
-- [ ] add to highscores after DEATH!!!!!!
-- [ ] go to highscores page after death
-- [ ] better Game Object Design
-- [ ] sounds
-- [ ] start new project  = ??
+- [x] add to highscores after DEATH!!!!!!
+- [x] go to highscores page after death
+- [x] add alien images
+- [ ] sounds???
